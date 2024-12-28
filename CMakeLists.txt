@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.28.3)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_COMPILER g++)
 project(Parallel-Computing-Project LANGUAGES CXX)
 
 find_package(GTest REQUIRED)
