@@ -10,6 +10,8 @@ find_package(GTest REQUIRED)
 enable_testing()
 add_subdirectory(tests)
 
+add_subdirectory(experiments)
+
 add_executable(
     main
     main.cpp ${ProjectSources}

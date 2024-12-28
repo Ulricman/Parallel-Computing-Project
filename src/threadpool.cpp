@@ -18,6 +18,7 @@ void ThreadPool::worker_loop() {
 }
 
 void ThreadPool::shutdown() {
+  while (!tasks_.empty());
   shutdown_.store(true, std::memory_order_relaxed);
 
   // Make sure all threads are waken up.
