@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <concepts>
 #include <functional>
 #include <thread>
 
@@ -24,7 +25,10 @@ class ThreadPool {
   ~ThreadPool() {
     if (!shutdown_.load(std::memory_order_relaxed)) shutdown();
   }
-  void submit(std::function<void()>&& task) { tasks_.enqueue(task); }
+  template <std::invocable Task>
+  void submit(Task&& task) {
+    tasks_.enqueue(task_t(task));
+  }
   void shutdown();
 };
 }  // namespace project

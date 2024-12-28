@@ -22,7 +22,6 @@ void ThreadPool::shutdown() {
 
   // Make sure all threads are waken up.
   for (int worker_idx = 0; worker_idx < workers_.size(); ++worker_idx) {
-    // TODO: push this idle task directly.
     submit([]() {});
   }
 

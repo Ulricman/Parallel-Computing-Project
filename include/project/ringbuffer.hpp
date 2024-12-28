@@ -32,6 +32,7 @@ class RingBuffer {
   inline bool empty() const { return head_ == tail_; }
   inline bool full() const { return (tail_ + 1) % capacity_ == head_; }
   void enqueue(T& item);
+  void enqueue(T&& item) { enqueue(item); }
   void dequeue(T& item);
 };
 
