@@ -22,7 +22,7 @@ void test_sum(int n_rows, int n_cols) {
     res += std::accumulate(row.cbegin(), row.cend(), 0.0);
   }
   auto end = std::chrono::system_clock::now();
-  std::cout << "\033[32m Sequential\033[0m: "
+  std::cout << "\033[32m      Sequential\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
@@ -44,7 +44,7 @@ void test_sum(int n_rows, int n_cols) {
   threadpool.shutdown();
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
   end = std::chrono::system_clock::now();
-  std::cout << "\033[32m   Parallel\033[0m: "
+  std::cout << "\033[32m        Parallel\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
@@ -58,13 +58,23 @@ void test_sum(int n_rows, int n_cols) {
   project::parallel_for(project::blocked_range(0, n_rows, n_rows / 10), task);
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
   end = std::chrono::system_clock::now();
-  std::cout << "\033[32mParallelFor\033[0m: "
+  std::cout << "\033[32m     ParallelFor\033[0m: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                     start)
+            << std::endl;
+
+  // Parallel summation with parallel_for() with fixed number of threads.
+  start = std::chrono::system_clock::now();
+  project::parallel_for(project::blocked_range(0, n_rows), task, 15);
+  res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
+  end = std::chrono::system_clock::now();
+  std::cout << "\033[32mParallelForFixed\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 }
 
 int main() {
-  int n_rows = 1000, n_cols = 100000;
+  int n_rows = 1000, n_cols = 1000000;
   test_sum(n_rows, n_cols);
 }
