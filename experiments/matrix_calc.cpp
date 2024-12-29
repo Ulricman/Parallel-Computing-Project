@@ -6,6 +6,7 @@
 #include <thread>
 #include <vector>
 
+#include "project/parallel_for.hpp"
 #include "project/threadpool.hpp"
 #include "project/utils.hpp"
 
@@ -21,13 +22,12 @@ void test_sum(int n_rows, int n_cols) {
     res += std::accumulate(row.cbegin(), row.cend(), 0.0);
   }
   auto end = std::chrono::system_clock::now();
-  std::cout << "\033[32mSequential Sum\033[0m: "
-            << std::chrono::duration_cast<std::chrono::microseconds>(end -
+  std::cout << "\033[32m Sequential\033[0m: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
-                   .count()
-            << " ms\n";
+            << std::endl;
 
-  // Parallel summation.
+  // Parallel summation with threadpool.
   project::ThreadPool threadpool(100, 10);
   start = std::chrono::system_clock::now();
   res = 0;
@@ -44,11 +44,24 @@ void test_sum(int n_rows, int n_cols) {
   threadpool.shutdown();
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
   end = std::chrono::system_clock::now();
-  std::cout << "\033[32m  Parallel Sum\033[0m: "
-            << std::chrono::duration_cast<std::chrono::microseconds>(end -
+  std::cout << "\033[32m   Parallel\033[0m: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
-                   .count()
-            << " ms\n";
+            << std::endl;
+
+  // Parallel summation with parallel_for().
+  start = std::chrono::system_clock::now();
+  auto task = [&matrix, &row_summation](int idx) {
+    row_summation[idx] =
+        std::accumulate(matrix[idx].cbegin(), matrix[idx].cend(), 0);
+  };
+  project::parallel_for(project::blocked_range(0, n_rows, n_rows / 10), task);
+  res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
+  end = std::chrono::system_clock::now();
+  std::cout << "\033[32mParallelFor\033[0m: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                     start)
+            << std::endl;
 }
 
 int main() {
