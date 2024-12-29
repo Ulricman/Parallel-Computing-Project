@@ -16,12 +16,12 @@ void test_sum(int n_rows, int n_cols) {
   project::fill_matrix<val_t>(matrix, 10, 10);
 
   // Sequental Summation.
-  auto start = std::chrono::system_clock::now();
+  auto start = project::start();
   val_t res = 0;
   for (const auto& row : matrix) {
     res += std::accumulate(row.cbegin(), row.cend(), 0.0);
   }
-  auto end = std::chrono::system_clock::now();
+  auto end = project::end();
   std::cout << "\033[32m      Sequential\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
@@ -29,7 +29,7 @@ void test_sum(int n_rows, int n_cols) {
 
   // Parallel summation with threadpool.
   project::ThreadPool threadpool(100, 10);
-  start = std::chrono::system_clock::now();
+  start = project::start();
   res = 0;
 
   std::vector<double> row_summation(n_rows, 0);
@@ -43,31 +43,31 @@ void test_sum(int n_rows, int n_cols) {
   }
   threadpool.shutdown();
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
-  end = std::chrono::system_clock::now();
+  end = project::end();
   std::cout << "\033[32m        Parallel\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 
   // Parallel summation with parallel_for().
-  start = std::chrono::system_clock::now();
+  start = project::start();
   auto task = [&matrix, &row_summation](int idx) {
     row_summation[idx] =
         std::accumulate(matrix[idx].cbegin(), matrix[idx].cend(), 0);
   };
   project::parallel_for(project::blocked_range(0, n_rows, n_rows / 10), task);
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
-  end = std::chrono::system_clock::now();
+  end = project::end();
   std::cout << "\033[32m     ParallelFor\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 
   // Parallel summation with parallel_for() with fixed number of threads.
-  start = std::chrono::system_clock::now();
+  start = project::start();
   project::parallel_for(project::blocked_range(0, n_rows), task, 15);
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
-  end = std::chrono::system_clock::now();
+  end = project::end();
   std::cout << "\033[32mParallelForFixed\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)

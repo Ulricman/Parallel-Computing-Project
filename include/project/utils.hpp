@@ -1,6 +1,7 @@
 #ifndef __PROJECT_UTILS_HPP__
 #define __PROJECT_UTILS_HPP__
 
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <type_traits>
@@ -25,6 +26,10 @@ void fill_matrix(std::vector<std::vector<T>>& matrix, T lower_bound,
     }
   }
 }
+
+auto inline start() { return std::chrono::system_clock::now(); }
+
+auto inline end() { return std::chrono::system_clock::now(); }
 
 }  // namespace project
 
