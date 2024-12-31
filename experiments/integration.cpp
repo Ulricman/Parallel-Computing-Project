@@ -48,12 +48,12 @@ int main() {
   double width = (upper_limit - lower_limit) / num_rects;
 
   // Sequential integration.
-  auto start = project::start();
+  auto start = project::get_ts();
   double area = 0.0;
   for (size_t rect_idx = 0; rect_idx != num_rects; ++rect_idx) {
     area += width * func(lower_limit + (rect_idx + 0.5) * width);
   }
-  auto end = project::end();
+  auto end = project::get_ts();
   std::cout << "\033[32m      Sequential\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
@@ -71,38 +71,38 @@ int main() {
 
   // Parallel integration with threadpool.
   project::ThreadPool threadpool(100, 10);
-  start = project::start();
+  start = project::get_ts();
   for (size_t interval_idx = 0; interval_idx != num_intervals; ++interval_idx) {
     threadpool.submit([&task, interval_idx]() { task(interval_idx); });
   }
   threadpool.shutdown();
   area = std::accumulate(area_per_interval.cbegin(), area_per_interval.cend(),
                          0.0);
-  end = project::end();
+  end = project::get_ts();
   std::cout << "\033[32m        Parallel\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 
   // Parallel integration with parallel_for().
-  start = project::start();
+  start = project::get_ts();
   project::parallel_for(project::blocked_range<size_t>(0, num_intervals), task);
   area = std::accumulate(area_per_interval.cbegin(), area_per_interval.cend(),
                          0.0);
-  end = project::end();
+  end = project::get_ts();
   std::cout << "\033[32m     ParallelFor\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 
   // Parallel integration with parallel_for() with fixed number of threads.
-  start = project::start();
+  start = project::get_ts();
   int num_threads = 10;
   project::parallel_for(project::blocked_range<size_t>(0, num_intervals), task,
                         num_threads);
   area = std::accumulate(area_per_interval.cbegin(), area_per_interval.cend(),
                          0.0);
-  end = project::end();
+  end = project::get_ts();
   std::cout << "\033[32mParallelForFixed\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)

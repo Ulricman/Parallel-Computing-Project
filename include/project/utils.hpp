@@ -27,9 +27,7 @@ void fill_matrix(std::vector<std::vector<T>>& matrix, T lower_bound,
   }
 }
 
-auto inline start() { return std::chrono::system_clock::now(); }
-
-auto inline end() { return std::chrono::system_clock::now(); }
+auto inline get_ts() { return std::chrono::system_clock::now(); }
 
 }  // namespace project
 
