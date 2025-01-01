@@ -35,20 +35,20 @@ int main() {
   project::ThreadPool threadpool(100, 5);
   start = project::get_ts();
   for (int row_idx = 0; row_idx < n; ++row_idx) {
-    for (int col_idx = 0; col_idx < n; ++col_idx) {
-      auto task = [&lhs, &rhs, &res, row_idx, col_idx, n]() {
+    auto task = [&lhs, &rhs, &res, row_idx, n]() {
+      for (int col_idx = 0; col_idx < n; ++col_idx) {
         double value = 0.0;
         for (int k = 0; k < n; ++k) {
           value += lhs[row_idx][k] * rhs[k][col_idx];
         }
         res[row_idx][col_idx] = value;
-      };
-      threadpool.submit(task);
-    }
+      }
+    };
+    threadpool.submit(task);
   }
   threadpool.shutdown();
   end = project::get_ts();
-  std::cout << "\033[32m        Parallel\033[0m: "
+  std::cout << "\033[32m      ThreadPool\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;

@@ -79,14 +79,16 @@ int main() {
   area = std::accumulate(area_per_interval.cbegin(), area_per_interval.cend(),
                          0.0);
   end = project::get_ts();
-  std::cout << "\033[32m        Parallel\033[0m: "
+  std::cout << "\033[32m      ThreadPool\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
 
   // Parallel integration with parallel_for().
   start = project::get_ts();
-  project::parallel_for(project::blocked_range<size_t>(0, num_intervals), task);
+  project::parallel_for(
+      project::blocked_range<size_t>(0, num_intervals, num_intervals / 10),
+      task);
   area = std::accumulate(area_per_interval.cbegin(), area_per_interval.cend(),
                          0.0);
   end = project::get_ts();

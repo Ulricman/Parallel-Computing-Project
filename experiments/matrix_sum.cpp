@@ -44,7 +44,7 @@ void test_sum(int n_rows, int n_cols) {
   threadpool.shutdown();
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
   end = project::get_ts();
-  std::cout << "\033[32m        Parallel\033[0m: "
+  std::cout << "\033[32m      ThreadPool\033[0m: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end -
                                                                      start)
             << std::endl;
@@ -65,7 +65,7 @@ void test_sum(int n_rows, int n_cols) {
 
   // Parallel summation with parallel_for() with fixed number of threads.
   start = project::get_ts();
-  project::parallel_for(project::blocked_range(0, n_rows), task, 15);
+  project::parallel_for(project::blocked_range(0, n_rows), task, 10);
   res = std::accumulate(row_summation.cbegin(), row_summation.cend(), 0.0);
   end = project::get_ts();
   std::cout << "\033[32mParallelForFixed\033[0m: "
