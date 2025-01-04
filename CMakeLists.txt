@@ -12,8 +12,10 @@ add_subdirectory(tests)
 
 add_subdirectory(experiments)
 
-add_executable(
-    main
-    main.cpp ${ProjectSources}
-)
-target_include_directories(main PUBLIC ${CMAKE_SOURCE_DIR}/include)
+file(GLOB ProjectSources CONFIGURE_DEPENDS "./*.cpp")
+
+foreach(ProjectSource ${ProjectSources})
+    get_filename_component(ExecName ${ProjectSource} NAME_WE)
+    add_executable(${ExecName} ${ProjectSource})
+    target_include_directories(${ExecName} PUBLIC ${CMAKE_SOURCE_DIR}/include())
+endforeach()
